@@ -1,0 +1,38 @@
+{
+  "name": "evagon",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w"
+  },
+  "keywords": [],
+  "author": "penquuin",
+  "license": "ISC",
+  "devDependencies": {
+    "@rbxts/compiler-types": "^1.2.3-types.0",
+    "@rbxts/types": "^1.0.530",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-roblox-ts": "^0.0.30",
+    "prettier": "^2.3.2",
+    "rbxts-transformer-flamework": "^1.0.0-beta.6",
+    "roblox-ts": "^1.2.3",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@flamework/components": "^1.0.0-beta.4",
+    "@flamework/core": "^1.0.0-beta.1",
+    "@flamework/networking": "^1.0.0-beta.5",
+    "@rbxts/flipper": "^2.0.1",
+    "@rbxts/net": "^2.1.4",
+    "@rbxts/roact": "^1.4.0-ts.0",
+    "@rbxts/roact-rodux": "^0.2.2-ts.4",
+    "@rbxts/rodux": "github:Penquuin/rbx-rodux#ThunkDispatcher-fix",
+    "@rbxts/services": "^1.2.0"
+  }
+}
