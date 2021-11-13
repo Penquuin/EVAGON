@@ -2,16 +2,22 @@ import Rodux from "@rbxts/rodux";
 
 export namespace CharacterRodux {
 	export interface CharacterState {
-		LookUnit: Vector3;
+		LookUnit: {
+			LookVector: Vector3;
+			UpVector: Vector3;
+		};
 	}
 	export namespace Actions {
 		export type InitAction = Rodux.Action<"Init"> & { state: CharacterState };
-		export type SetLookUnitAction = Rodux.Action<"SetLookUnit"> & { value: Vector3 };
+		export type SetLookUnitAction = Rodux.Action<"SetLookUnit"> & { value: CharacterState["LookUnit"] };
 		export type CharacterActions = InitAction | SetLookUnitAction;
 	}
 
 	export const DefaultCharacterState: CharacterState = {
-		LookUnit: new Vector3(1, 0, 0),
+		LookUnit: {
+			LookVector: new Vector3(0, 0, -1),
+			UpVector: new Vector3(0, 1, 0),
+		},
 	};
 	export const CharacterReducer = Rodux.createReducer<CharacterState, Actions.CharacterActions>(
 		DefaultCharacterState,
