@@ -29,10 +29,13 @@
     "@flamework/core": "^1.0.0-beta.1",
     "@flamework/networking": "^1.0.0-beta.5",
     "@rbxts/flipper": "^2.0.1",
+    "@rbxts/llama": "^1.1.0-ts2",
+    "@rbxts/maid": "^1.0.0-ts.1",
     "@rbxts/net": "^2.1.4",
     "@rbxts/roact": "^1.4.0-ts.0",
     "@rbxts/roact-rodux": "^0.2.2-ts.4",
     "@rbxts/rodux": "github:Penquuin/rbx-rodux#ThunkDispatcher-fix",
-    "@rbxts/services": "^1.2.0"
+    "@rbxts/services": "^1.2.0",
+    "@rbxts/signal": "^1.0.3"
   }
 }
