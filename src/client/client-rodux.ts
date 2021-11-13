@@ -1,8 +1,11 @@
+import Llama from "@rbxts/llama";
 import Rodux, { thunkMiddleware } from "@rbxts/rodux";
 import { Players } from "@rbxts/services";
+import Signal from "@rbxts/signal";
 import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { events } from "shared/rbxnet/events";
 import { SharedRodux } from "shared/shared-rodux";
+import { SharedRoduxUtil } from "shared/shared-rodux-util";
 
 export namespace ClientRodux {
 	export interface ClientState {
@@ -16,7 +19,7 @@ export namespace ClientRodux {
 		export type ClientThunk = Rodux.ThunkDispatcher<ClientState, Actions.ClientActions>;
 		export type ClientThunkAction = Rodux.ThunkAction<void, ClientState, {}, Actions.ClientActions>;
 		//client shared
-		function EasyDAA(action: AllocatedRodux.Actions.AllocatedActions): SharedRodux.OnSharedActionDispatched {
+		export function EasyDAA(action: AllocatedRodux.Actions.AllocatedActions): SharedRodux.OnSharedActionDispatched {
 			return CreateSendOSAD(CreateClientDAA(action));
 		}
 	}
@@ -29,7 +32,7 @@ export namespace ClientRodux {
 	}
 
 	export const DefaultClientState: ClientState = {
-		Shared: SharedRodux.DefaultSharedState,
+		Shared: { ...SharedRodux.DefaultSharedState },
 	};
 	export function CreateSendOSAD(x: SharedRodux.SharedActions) {
 		return SharedRodux.Actions.CreateOSAD(x, Players.LocalPlayer);
@@ -51,7 +54,7 @@ export namespace ClientRodux {
 			return g;
 		},
 	});
-	const ClientGuard = SharedRodux.CreateActionGuard<Actions.ClientActions>();
+	export const ClientGuard = SharedRoduxUtil.CreateActionGuard<Actions.ClientActions>();
 	function CreateClientMiddleware(): Rodux.Middleware<Actions.ClientActions, ClientState> {
 		return (nd, s) => {
 			return (a: Actions.ClientActions) => {
@@ -69,8 +72,12 @@ export namespace ClientRodux {
 					}
 				}
 				nd(a as Actions.ClientActions & Rodux.AnyAction);
+				Events.OnActionDispatched.Fire(a);
 			};
 		};
+	}
+	export namespace Events {
+		export const OnActionDispatched = new Signal<(a: Actions.ClientActions) => void>();
 	}
 	export const ClientStore = new Rodux.Store<
 		ClientState,

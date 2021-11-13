@@ -1,7 +1,9 @@
+import Llama from "@rbxts/llama";
 import Rodux from "@rbxts/rodux";
 import { Players, RunService } from "@rbxts/services";
 import { AllocatedRodux } from "./otherrodux/allocated-rodux";
 import { RestrictedRodux } from "./otherrodux/restricted-rodux";
+import { SharedRoduxUtil } from "./shared-rodux-util";
 
 export namespace SharedRodux {
 	export interface SharedState {
@@ -71,11 +73,11 @@ export namespace SharedRodux {
 			if (g.AllocatedData.value.get(a.key) === undefined && g.RestrictedData.value.get(a.key) === undefined) {
 				g.AllocatedData.value.set(
 					a.key,
-					a.state !== undefined ? a.state : AllocatedRodux.DefaultAllocatedState,
+					a.state !== undefined ? a.state : { ...AllocatedRodux.DefaultAllocatedState },
 				);
 				g.RestrictedData.value.set(
 					a.key,
-					a.state !== undefined ? a.state : RestrictedRodux.DefaultRestrictedState,
+					a.state !== undefined ? a.state : { ...RestrictedRodux.DefaultRestrictedState },
 				);
 			}
 			return g;
@@ -108,12 +110,7 @@ export namespace SharedRodux {
 		},
 		Init: (_, a) => a.state,
 	});
-	export function CreateActionGuard<J extends Rodux.Action>() {
-		return function <T extends J["type"]>(tc: T, x: J | Rodux.Action<T>): x is Rodux.Action<T> {
-			return x.type === tc;
-		};
-	}
-	export const SharedGuard = CreateActionGuard<SharedActions>();
+	export const SharedGuard = SharedRoduxUtil.CreateActionGuard<SharedActions>();
 	export type OnSharedActionDispatched = Rodux.Action<"OnSharedActionDispatched"> & {
 		SharedAction: SharedRodux.SharedActions;
 		From?: string;

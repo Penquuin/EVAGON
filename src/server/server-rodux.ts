@@ -1,6 +1,9 @@
 import Rodux from "@rbxts/rodux";
+import { Players } from "@rbxts/services";
+import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { events } from "shared/rbxnet/events";
 import { SharedRodux } from "shared/shared-rodux";
+import { SharedRoduxUtil } from "shared/shared-rodux-util";
 
 export namespace ServerRodux {
 	export interface ServerState {
@@ -14,7 +17,7 @@ export namespace ServerRodux {
 		export type ServerActions = InitAction | SharedRodux.OnSharedActionDispatched | SetOwnership | RemoveOwnership;
 	}
 
-	export const DefaultServerState: ServerState = { Shared: SharedRodux.DefaultSharedState };
+	export const DefaultServerState: ServerState = { Shared: { ...SharedRodux.DefaultSharedState } };
 	const ServerReducer = Rodux.createReducer<ServerState, Actions.ServerActions>(DefaultServerState, {
 		Init: (_, a) => a.State,
 		OnSharedActionDispatched: (s, a) => {
@@ -62,11 +65,14 @@ export namespace ServerRodux {
 					if (a.From !== undefined && a.ServerFrom !== undefined) {
 						//If it's from a player
 						const supremacy = a.ServerFrom.UserId === game.CreatorId;
+						let dto = true;
 						//If it's Silkmatic
 						if (!supremacy) {
 							if (SharedRodux.SharedGuard("DispatchAllocAction", a.SharedAction)) {
 								//Override cloud storage key
 								a.SharedAction.key = SharedRodux.GenerateKey(a.ServerFrom);
+								//Rate limiting
+								dto = RateLimiting.AllocCache.CheckRate(a.ServerFrom, a.SharedAction.action.type);
 							} else {
 								const fn = SharedRodux.OwnershipMap[a.SharedAction.type];
 								if (fn === "none" || !CheckOwnership(s.Shared[fn], a.From)) {
@@ -77,7 +83,9 @@ export namespace ServerRodux {
 						}
 						const rep = { ...a };
 						rep.ServerFrom = undefined; //Dispose ephemeral property
-						Events.ServerDispatch.SendToAllPlayersExcept(a.ServerFrom, rep);
+						if (dto) {
+							Events.ServerDispatch.SendToAllPlayersExcept(a.ServerFrom, rep);
+						}
 					} else {
 						Events.ServerDispatch.SendToAllPlayers({ ...a });
 					}
@@ -86,10 +94,63 @@ export namespace ServerRodux {
 			};
 		};
 	}
-	const ServerGuard = SharedRodux.CreateActionGuard<Actions.ServerActions>();
+	const ServerGuard = SharedRoduxUtil.CreateActionGuard<Actions.ServerActions>();
 	export const ServerStore = new Rodux.Store<ServerState, Actions.ServerActions, Actions.ServerActions>(
 		ServerReducer,
 		undefined,
 		[CreateServerMiddleware()],
 	);
+	export namespace RateLimiting {
+		type actToNum<T extends Rodux.Action> = { [a in T["type"]]: number };
+		class RLCache<T extends Rodux.Action> {
+			private Buffer = new Map<string, Partial<actToNum<T>>>();
+			private readonly standard: actToNum<T>;
+			constructor(rlbase: actToNum<T>) {
+				this.standard = rlbase;
+				print(rlbase);
+				Players.PlayerAdded.Connect((p) => {
+					this.Add(p);
+				});
+				Players.PlayerRemoving.Connect((p) => {
+					this.Remove(p);
+				});
+			}
+			public CheckRate(player: Player, actiontype: T["type"]): boolean {
+				const k = this.Get(player);
+				if (k !== undefined) {
+					const j = k[actiontype];
+					if (j !== undefined) {
+						const elapse = tick() - (j as number);
+						if (elapse <= this.standard[actiontype] && this.standard[actiontype] > 0) return false;
+					}
+					this.SetTick(player, actiontype);
+					return true;
+				}
+				return false;
+			}
+			public Add(player: Player) {
+				const k = SharedRodux.GenerateKey(player);
+				if (this.Buffer.get(k) === undefined) {
+					this.Buffer.set(k, {});
+				}
+			}
+			private SetTick(player: Player, actiontype: T["type"]) {
+				const t = this.Buffer.get(SharedRodux.GenerateKey(player));
+				if (t !== undefined) {
+					const g = { ...t };
+					g[actiontype] = tick();
+				}
+			}
+			public Get(player: Player) {
+				return this.Buffer.get(SharedRodux.GenerateKey(player));
+			}
+			public Remove(player: Player) {
+				const k = SharedRodux.GenerateKey(player);
+				if (this.Buffer.get(k) !== undefined) {
+					this.Buffer.delete(k);
+				}
+			}
+		}
+		export const AllocCache = new RLCache<AllocatedRodux.Actions.AllocatedActions>({ DispatchChar: -1, Init: -1 });
+	}
 }
