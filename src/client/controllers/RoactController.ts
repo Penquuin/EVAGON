@@ -4,9 +4,9 @@ import { HeadHandler } from "client/UI/head/HeadHandler";
 
 @Controller({})
 export class RoactController implements OnStart, OnInit {
-	onInit() {}
+  onInit() {}
 
-	onStart() {
-		Roact.mount(Roact.createElement(HeadHandler));
-	}
+  onStart() {
+    Roact.mount(Roact.createElement(HeadHandler));
+  }
 }

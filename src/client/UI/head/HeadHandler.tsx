@@ -4,10 +4,10 @@ import { PlayerHandlerService } from "../advanced/playerhandler";
 import { DisplayHandler } from "../geometry/displayhandler";
 
 export const HeadHandler: Roact.FunctionComponent = () => {
-	return (
-		<Portal target={Players.LocalPlayer.WaitForChild("PlayerGui")}>
-			<DisplayHandler Key={"DisplayHandler"} />
-			<PlayerHandlerService Key={"PlayerHandlerService"} />
-		</Portal>
-	);
+  return (
+    <Portal target={Players.LocalPlayer.WaitForChild("PlayerGui")}>
+      <DisplayHandler Key={"DisplayHandler"} />
+      <PlayerHandlerService Key={"PlayerHandlerService"} />
+    </Portal>
+  );
 };
