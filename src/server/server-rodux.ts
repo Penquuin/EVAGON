@@ -1,5 +1,5 @@
 import Rodux from "@rbxts/rodux";
-import { Players } from "@rbxts/services";
+import { Players, RunService } from "@rbxts/services";
 import { CharacterRodux } from "shared/otherrodux/allocate/character-rodux";
 import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { events } from "shared/rbxnet/events";
@@ -73,12 +73,14 @@ export namespace ServerRodux {
             const supremacy = a.ServerFrom.UserId === game.CreatorId;
             let dto = true;
             //If it's Silkmatic
-            if (!supremacy) {
+            if (!supremacy || RunService.IsStudio()) {
               if (SharedRodux.SharedGuard("DispatchAllocAction", a.SharedAction)) {
                 //Override cloud storage key
                 a.SharedAction.key = SharedRodux.GenerateKey(a.ServerFrom);
                 //Rate limiting
                 dto = RateLimiting.AllocCache.CheckRate(a.ServerFrom, a.SharedAction.action.type);
+                if (AllocatedRodux.AllocGuard("DispatchChar", a.SharedAction.action))
+                  dto = RateLimiting.CharCache.CheckRate(a.ServerFrom, a.SharedAction.action.action.type);
               } else {
                 const fn = SharedRodux.OwnershipMap[a.SharedAction.type];
                 if (fn === "none" || !CheckOwnership(s.Shared[fn], a.From)) {
@@ -137,6 +139,8 @@ export namespace ServerRodux {
           }
           this.SetTick(player, actiontype);
           return true;
+        } else {
+          this.SetTick(player, actiontype);
         }
         return false;
       }
@@ -147,10 +151,12 @@ export namespace ServerRodux {
         }
       }
       private SetTick(player: Player, actiontype: T["type"]) {
-        const t = this.Buffer.get(SharedRodux.GenerateKey(player));
+        const gen = SharedRodux.GenerateKey(player);
+        const t = this.Buffer.get(gen);
         if (t !== undefined) {
           const g = { ...t };
           g[actiontype] = tick();
+          this.Buffer.set(gen, g);
         }
       }
       public Get(player: Player) {
