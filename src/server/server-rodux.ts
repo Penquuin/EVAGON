@@ -175,7 +175,7 @@ export namespace ServerRodux {
     });
     export const CharCache = new RLCache<CharacterRodux.Actions.CharacterActions>({
       Init: -1,
-      SetLookUnit: 1 / 30,
+      SetLookUnit: 1 / 40,
     });
   }
 }

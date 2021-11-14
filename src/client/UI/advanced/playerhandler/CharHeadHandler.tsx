@@ -40,11 +40,12 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
     retrievecdata();
     this.sig = ClientRodux.ClientStore.changed.connect(retrievecdata);
     task.spawn(() => {
+      const h = (this.props.character.FindFirstChild("Head") ||
+        this.props.character.WaitForChild("Head")) as Character["Head"];
+      const ogc0 = h.Neck.C0;
       while (this.rtime) {
         const cam = Workspace.CurrentCamera;
         if (cam && this.props.character) {
-          const h = (this.props.character.FindFirstChild("Head") ||
-            this.props.character.WaitForChild("Head")) as Character["Head"];
           if (cam.CFrame.Position.sub(h.Position).Magnitude < 30 || this.islocal) {
             if (!this.state.debugcircle) {
               const g = { ...this.state };
@@ -94,6 +95,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
             RunService.Stepped.Wait();
             continue;
           } else {
+            h.Neck.C0 = ogc0;
             if (this.state.debugcircle) {
               const g = { ...this.state };
               g.debugcircle = false;
@@ -116,7 +118,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
           <Billboards.Heado
             chr={this.props.character}
             Size={new UDim2(0, 100, 0, 20)}
-            ExtentsOffsetWorldSpace={new Vector3(0, 2, 0)}
+            ExtentsOffsetWorldSpace={new Vector3(0, 4, 0)}
             ClipsDescendants={false}
           >
             <uilistlayout Padding={new UDim(0, 10)} HorizontalAlignment={"Center"} FillDirection={"Horizontal"} />

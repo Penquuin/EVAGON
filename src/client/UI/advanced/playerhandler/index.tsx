@@ -64,6 +64,7 @@ export class PlayerHandler extends Roact.Component<IPlayerHandlerProps> {
 
 class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?: Character }> {
   private maid = new Maid();
+  private minimaid?: Maid;
   constructor(p: IPlayerHandlerProps) {
     super(p);
     this.setState({
@@ -76,10 +77,28 @@ class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?
         const g = { ...this.state };
         g.character = c as Character;
         this.setState(g);
+        this.minimaid?.Destroy();
+        this.minimaid = new Maid();
+        this.minimaid.GiveTask(
+          (c.WaitForChild("Humanoid") as Humanoid).Died.Connect(() => {
+            this.minimaid?.Destroy();
+            const go = { ...this.state };
+            go.character = undefined;
+            this.setState(go);
+          }),
+        );
+      }),
+    );
+    this.maid.GiveTask(
+      this.props.Player.CharacterAdded.Connect((c) => {
+        const g = { ...this.state };
+        g.character = c as Character;
+        this.setState(g);
       }),
     );
   }
   willUnmount() {
+    this.minimaid?.Destroy();
     this.maid.Destroy();
   }
   render() {
