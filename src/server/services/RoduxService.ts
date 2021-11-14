@@ -8,9 +8,9 @@ import { SharedRodux } from "shared/shared-rodux";
 export class RoduxService implements OnStart, OnInit {
 	onInit() {
 		ServerRodux.ServerStore.dispatch({ type: "Init", State: ServerRodux.DefaultServerState });
-		ServerRodux.ServerStore.changed.connect((n) => {
-			print("Server:", n);
-		});
+		// ServerRodux.ServerStore.changed.connect((n) => {
+		// 	print("Server:", n);
+		// });
 		events.Server.Create("MutateServer").Connect((p, a) => {
 			const act = SharedRodux.Actions.CreateOSAD(a, p);
 			act.ServerFrom = p;

@@ -2,6 +2,7 @@ import Llama from "@rbxts/llama";
 import Rodux, { thunkMiddleware } from "@rbxts/rodux";
 import { Players } from "@rbxts/services";
 import Signal from "@rbxts/signal";
+import { CharacterRodux } from "shared/otherrodux/allocate/character-rodux";
 import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { events } from "shared/rbxnet/events";
 import { SharedRodux } from "shared/shared-rodux";
@@ -21,6 +22,9 @@ export namespace ClientRodux {
 		//client shared
 		export function EasyDAA(action: AllocatedRodux.Actions.AllocatedActions): SharedRodux.OnSharedActionDispatched {
 			return CreateSendOSAD(CreateClientDAA(action));
+		}
+		export function EasyDCA(action: CharacterRodux.Actions.CharacterActions): SharedRodux.OnSharedActionDispatched {
+			return EasyDAA({ type: "DispatchChar", action: action });
 		}
 	}
 

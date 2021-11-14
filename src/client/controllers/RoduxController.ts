@@ -12,9 +12,9 @@ export class RoduxController implements OnStart, OnInit {
 			.CallServerAsync()
 			.then((v) => {
 				ClientRodux.ClientStore.dispatch(SharedRodux.Actions.CreateOSAD({ type: "Init", state: v }));
-				ClientRodux.ClientStore.changed.connect((n) => {
-					print("Client:", n);
-				});
+				// ClientRodux.ClientStore.changed.connect((n) => {
+				// 	print("Client:", n);
+				// });
 				events.Client.Get("ServerDispatch").Connect((v) => {
 					ClientRodux.ClientStore.dispatch(v);
 				});
