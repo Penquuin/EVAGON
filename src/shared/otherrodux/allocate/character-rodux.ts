@@ -29,10 +29,4 @@ export namespace CharacterRodux {
       return g;
     },
   });
-  //Rate limit: per sec
-  export const RateLimits: {
-    [a in Actions.CharacterActions["type"]]?: number;
-  } = {
-    SetLookUnit: 4,
-  };
 }
