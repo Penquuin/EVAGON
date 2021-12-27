@@ -46,9 +46,11 @@ export class PlayerHandlerService extends Roact.Component<{}, IPhSState> {
   }
   render() {
     return (
-      <frame BackgroundTransparency={1} Visible={false}>
-        {this.state.Elements}
-      </frame>
+      <screengui ResetOnSpawn={false}>
+        <frame BackgroundTransparency={1} Visible={false}>
+          {this.state.Elements}
+        </frame>
+      </screengui>
     );
   }
 }
@@ -74,23 +76,18 @@ class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?
   didMount() {
     this.maid.GiveTask(
       this.props.Player.CharacterAdded.Connect((c) => {
-        const g = { ...this.state };
-        g.character = c as Character;
-        this.setState(g);
+        print("to");
         this.minimaid?.Destroy();
         this.minimaid = new Maid();
         this.minimaid.GiveTask(
           (c.WaitForChild("Humanoid") as Humanoid).Died.Connect(() => {
-            this.minimaid?.Destroy();
             const go = { ...this.state };
             go.character = undefined;
+            print(go);
             this.setState(go);
+            this.minimaid?.Destroy();
           }),
         );
-      }),
-    );
-    this.maid.GiveTask(
-      this.props.Player.CharacterAdded.Connect((c) => {
         const g = { ...this.state };
         g.character = c as Character;
         this.setState(g);
@@ -98,11 +95,15 @@ class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?
     );
   }
   willUnmount() {
+    print("bye");
     this.minimaid?.Destroy();
     this.maid.Destroy();
   }
   render() {
-    if (!this.state.character) return;
+    print("RE");
+    if (this.state.character === undefined) return;
+    print("shame");
+    print(this.state.character);
     return (
       <>
         <CharHeadHandler Key={"CharheadHandler"} Player={this.props.Player} character={this.state.character} />

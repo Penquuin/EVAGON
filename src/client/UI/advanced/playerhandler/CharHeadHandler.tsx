@@ -28,6 +28,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
     });
   }
   didMount() {
+    print("MO");
     const retrievecdata = () => {
       const s = AllocatedRodux.GetAllocData(
         SharedRodux.GenerateKey(this.props.Player),
@@ -45,6 +46,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
       const ogc0 = h.Neck.C0;
       while (this.rtime) {
         const cam = Workspace.CurrentCamera;
+        if (h.FindFirstChild("Neck") === undefined) break;
         if (cam && this.props.character) {
           if (cam.CFrame.Position.sub(h.Position).Magnitude < 30 || this.islocal) {
             if (!this.state.debugcircle) {
@@ -56,6 +58,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
             const hrp = this.props.character.HumanoidRootPart;
             const pr = hrp.CFrame.sub(hrp.Position);
             const seto = (lv: Vector3, uv: Vector3) => {
+              if (h.FindFirstChild("Neck") === undefined) return;
               h.Neck.Transform = new CFrame();
               h.Neck.C0 = h.Neck.C0.Lerp(
                 pr.ToObjectSpace(CFrame.fromMatrix(new Vector3(), lv.Cross(uv), uv)).add(h.Neck.C0.Position),
@@ -108,6 +111,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
     });
   }
   willUnmount() {
+    print("umount");
     this.rtime = false;
     this.sig?.disconnect();
   }
