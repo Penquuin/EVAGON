@@ -8,7 +8,7 @@ import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { SharedRodux } from "shared/shared-rodux";
 import { Animated } from "../../base/Bases";
 import { Billboards, Portals } from "../../base/Portals";
-import { LogOnce } from "../../debug/Develope";
+import { LogOnce } from "../../debug/Develop";
 import { CharHeadHandler } from "./CharHeadHandler";
 interface IPlayerHandlerProps {
   Player: Player;
@@ -64,13 +64,14 @@ export class PlayerHandler extends Roact.Component<IPlayerHandlerProps> {
   }
 }
 
-class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?: Character }> {
+class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?: Character; render: boolean }> {
   private maid = new Maid();
   private minimaid?: Maid;
   constructor(p: IPlayerHandlerProps) {
     super(p);
     this.setState({
       character: this.props.Player.Character ? (this.props.Player.Character as Character) : undefined,
+      render: true,
     });
   }
   didMount() {
@@ -83,27 +84,24 @@ class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?
           (c.WaitForChild("Humanoid") as Humanoid).Died.Connect(() => {
             const go = { ...this.state };
             go.character = undefined;
-            print(go);
+            go.render = false;
             this.setState(go);
             this.minimaid?.Destroy();
           }),
         );
         const g = { ...this.state };
         g.character = c as Character;
+        g.render = true;
         this.setState(g);
       }),
     );
   }
   willUnmount() {
-    print("bye");
     this.minimaid?.Destroy();
     this.maid.Destroy();
   }
   render() {
-    print("RE");
-    if (this.state.character === undefined) return;
-    print("shame");
-    print(this.state.character);
+    if (!this.state.render || !this.state.character) return;
     return (
       <>
         <CharHeadHandler Key={"CharheadHandler"} Player={this.props.Player} character={this.state.character} />

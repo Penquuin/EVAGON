@@ -28,7 +28,6 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
     });
   }
   didMount() {
-    print("MO");
     const retrievecdata = () => {
       const s = AllocatedRodux.GetAllocData(
         SharedRodux.GenerateKey(this.props.Player),
@@ -111,7 +110,6 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
     });
   }
   willUnmount() {
-    print("umount");
     this.rtime = false;
     this.sig?.disconnect();
   }
