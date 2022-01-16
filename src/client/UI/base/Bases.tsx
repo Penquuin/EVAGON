@@ -29,6 +29,13 @@ export namespace Bases {
     TextColor3: new Color3(1, 1, 1),
     TextWrapped: true,
   });
+  export const TextButton = CreateSimpleComponent("TextButton", {
+    ...base,
+    Font: "GothamSemibold",
+    TextSize: 16,
+    TextColor3: new Color3(1, 1, 1),
+    TextWrapped: true,
+  });
 }
 
 export namespace Animated {

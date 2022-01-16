@@ -10,6 +10,7 @@ import { Animated } from "../../base/Bases";
 import { Billboards, Portals } from "../../base/Portals";
 import { LogOnce } from "../../debug/Develop";
 import { CharHeadHandler } from "./CharHeadHandler";
+import { CookieHandler } from "./CookieHandler";
 interface IPlayerHandlerProps {
   Player: Player;
 }
@@ -104,6 +105,7 @@ class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?
     if (!this.state.render || !this.state.character) return;
     return (
       <>
+        <CookieHandler Key={"CookieHandler"} Player={this.props.Player} character={this.state.character} />
         <CharHeadHandler Key={"CharheadHandler"} Player={this.props.Player} character={this.state.character} />
       </>
     );
