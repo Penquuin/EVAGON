@@ -75,7 +75,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
               const product = uv.Lerp(cuv, 0.5);
               seto(lv, product);
               const t = tick();
-              if (t - this.lastSubmit > 1 / 30) {
+              if (t - this.lastSubmit > 1 / 20) {
                 this.lastSubmit = t;
                 ClientRodux.ClientStore.dispatch(
                   ClientRodux.Thunks.EasyDCA({
