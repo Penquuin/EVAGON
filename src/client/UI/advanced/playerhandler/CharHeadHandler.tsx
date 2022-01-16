@@ -37,8 +37,10 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
         this.cdata = { ...s.CharacterState };
       }
     };
-    retrievecdata();
-    this.sig = ClientRodux.ClientStore.changed.connect(retrievecdata);
+    if (!this.islocal) {
+      retrievecdata();
+      this.sig = ClientRodux.ClientStore.changed.connect(retrievecdata);
+    }
     task.spawn(() => {
       const h = (this.props.character.FindFirstChild("Head") ||
         this.props.character.WaitForChild("Head")) as Character["Head"];
@@ -63,6 +65,7 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
                 pr.ToObjectSpace(CFrame.fromMatrix(new Vector3(), lv.Cross(uv), uv)).add(h.Neck.C0.Position),
                 0.1,
               );
+              print("T");
             };
             const rlv = hrp.CFrame.LookVector;
             const uv = hrp.CFrame.UpVector;
@@ -77,17 +80,20 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
               const t = tick();
               if (t - this.lastSubmit > 1 / 20) {
                 this.lastSubmit = t;
-                ClientRodux.ClientStore.dispatch(
-                  ClientRodux.Thunks.EasyDCA({
-                    type: "SetLookUnit",
-                    value: {
-                      LookVector: lv,
-                      UpVector: product,
-                    },
-                  }),
-                );
+                task.spawn(() => {
+                  ClientRodux.ClientStore.dispatch(
+                    ClientRodux.Thunks.EasyDCA({
+                      type: "SetLookUnit",
+                      value: {
+                        LookVector: lv,
+                        UpVector: product,
+                      },
+                    }),
+                  );
+                });
               }
             } else {
+              print("no local");
               if (this.cdata) {
                 const lv = this.cdata.LookUnit.LookVector;
                 const cuv = this.cdata.LookUnit.UpVector;
