@@ -5,6 +5,7 @@ import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { events } from "shared/rbxnet/events";
 import { SharedRodux } from "shared/shared-rodux";
 import { SharedRoduxUtil } from "shared/shared-rodux-util";
+import { RateLimiting } from "./rate-limit";
 
 export namespace ServerRodux {
   export interface ServerState {
@@ -108,74 +109,4 @@ export namespace ServerRodux {
     undefined,
     [CreateServerMiddleware()],
   );
-  export namespace RateLimiting {
-    type actToNum<T extends Rodux.Action> = { [a in T["type"]]: number };
-    class RLCache<T extends Rodux.Action> {
-      private Buffer = new Map<string, Partial<actToNum<T>>>();
-      private readonly standard: actToNum<T>;
-      constructor(rlbase: actToNum<T>) {
-        this.standard = rlbase;
-        print(rlbase);
-        Players.PlayerAdded.Connect((p) => {
-          this.Add(p);
-        });
-        Players.PlayerRemoving.Connect((p) => {
-          this.Remove(p);
-        });
-      }
-      public CheckRate(player: Player, actiontype: T["type"]): boolean {
-        const k = this.Get(player);
-        if (k !== undefined) {
-          const j = k[actiontype];
-          if (j !== undefined) {
-            const elapse = tick() - (j as number);
-            if (elapse <= this.standard[actiontype] && this.standard[actiontype] > 0) {
-              /**
-               * !DEBUG
-               */
-              warn("Player has exceeded time for: " + actiontype);
-              return false;
-            }
-          }
-          this.SetTick(player, actiontype);
-          return true;
-        } else {
-          this.SetTick(player, actiontype);
-        }
-        return false;
-      }
-      public Add(player: Player) {
-        const k = SharedRodux.GenerateKey(player);
-        if (this.Buffer.get(k) === undefined) {
-          this.Buffer.set(k, {});
-        }
-      }
-      private SetTick(player: Player, actiontype: T["type"]) {
-        const gen = SharedRodux.GenerateKey(player);
-        const t = this.Buffer.get(gen);
-        if (t !== undefined) {
-          const g = { ...t };
-          g[actiontype] = tick();
-          this.Buffer.set(gen, g);
-        }
-      }
-      public Get(player: Player) {
-        return this.Buffer.get(SharedRodux.GenerateKey(player));
-      }
-      public Remove(player: Player) {
-        const k = SharedRodux.GenerateKey(player);
-        if (this.Buffer.get(k) !== undefined) {
-          this.Buffer.delete(k);
-        }
-      }
-    }
-    export const AllocCache = new RLCache<AllocatedRodux.Actions.AllocatedActions>({
-      DispatchChar: -1,
-      Init: -1,
-    });
-    export const CharCache = new RLCache<CharacterRodux.Actions.CharacterActions>({
-      Init: -1,
-      SetLookUnit: 1 / 40,
-    });
-  }
 }

@@ -93,7 +93,6 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
                 });
               }
             } else {
-              print("no local");
               if (this.cdata) {
                 const lv = this.cdata.LookUnit.LookVector;
                 const cuv = this.cdata.LookUnit.UpVector;

@@ -25,7 +25,7 @@ export class CookieHandler extends Roact.Component<ICharHandlersProps, CHandlerS
   protected didMount(): void {
     this.maid.GiveTask(
       ClientEph.EventDispatch.Connect((serverpack) => {
-        if (EphTypes.ServerTypeGuard<"ephcookie">("ephcookie", serverpack)) {
+        if (EphTypes.ServerTypeGuard("ephcookie", serverpack)) {
           this.increment(serverpack.pack.increment);
         }
       }),
