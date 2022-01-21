@@ -1,5 +1,4 @@
 import Rodux from "@rbxts/rodux";
-import { $terrify } from "rbxts-transformer-t";
 
 /**
  * TODO:Create some settings
@@ -7,6 +6,10 @@ import { $terrify } from "rbxts-transformer-t";
 
 export namespace SettingsRodux {
   export const statustab: Array<SettingsState["DebugToolStatus"]> = ["Phi", "Sigmoid", "Vue"];
+  const statusguard = (x: string): x is SettingsState["DebugToolStatus"] => {
+    if (x === "Phi" || x === "Sigmoid" || x === "Vue") return true;
+    return false;
+  };
   export interface SettingsState {
     DebugToolStatus: "Phi" | "Sigmoid" | "Vue";
   }
@@ -22,7 +25,7 @@ export namespace SettingsRodux {
     {
       Init: (_, a) => a.state,
       ChangeMode: (s, a) => {
-        if (!$terrify<SettingsState["DebugToolStatus"]>()(a.status)) return s;
+        if (!statusguard(a.status)) return s;
         const g = { ...s };
         g.DebugToolStatus = a.status;
         return g;

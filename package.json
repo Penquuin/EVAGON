@@ -37,6 +37,7 @@
 		"@rbxts/rodux": "github:Penquuin/rbx-rodux#ThunkDispatcher-fix",
 		"@rbxts/services": "^1.2.0",
 		"@rbxts/signal": "^1.0.3",
+		"@rbxts/t": "^3.0.0",
 		"rbxts-transformer-t": "^1.1.4"
 	}
 }

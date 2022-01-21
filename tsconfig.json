@@ -23,11 +23,11 @@
 
 		"experimentalDecorators": true,
 		"plugins": [
+			{ "transform": "rbxts-transformer-t" },
 			{
 				"transform": "rbxts-transformer-flamework",
 				"obfuscation": false
-			},
-			{ "transform": "rbxts-transformer-t" }
+			}
 		]
 	}
 }
