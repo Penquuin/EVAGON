@@ -3,17 +3,14 @@ import Roact, { Element } from "@rbxts/roact";
 import { ClientEph } from "client/client-eph";
 import { Bases } from "client/UI/base/Bases";
 import { EphTypes } from "shared/ephevents/ephtypes";
+import { PHDescendantsProps } from "./ph-typings";
 
 interface CHandlerState {
   CurrentCookies: number;
 }
-interface ICharHandlersProps {
-  Player: Player;
-  character: Character;
-}
-export class CookieHandler extends Roact.Component<ICharHandlersProps, CHandlerState> {
+export class CookieHandler extends Roact.Component<PHDescendantsProps, CHandlerState> {
   private maid = new Maid();
-  constructor(p: ICharHandlersProps) {
+  constructor(p: PHDescendantsProps) {
     super(p);
     this.setState({ CurrentCookies: 0 });
   }

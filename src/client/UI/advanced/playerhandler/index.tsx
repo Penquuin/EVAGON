@@ -4,13 +4,16 @@ import Rodux from "@rbxts/rodux";
 import { LogService, Players, RunService, Workspace } from "@rbxts/services";
 import { ClientRodux } from "client/client-rodux";
 import { CharacterRodux } from "shared/otherrodux/allocate/character-rodux";
+import { SettingsRodux } from "shared/otherrodux/allocate/settings-rodux";
 import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { SharedRodux } from "shared/shared-rodux";
+import { Tools } from "../../../../../types/Tools";
 import { Animated } from "../../base/Bases";
 import { Billboards, Portals } from "../../base/Portals";
 import { LogOnce } from "../../debug/Develop";
 import { CharHeadHandler } from "./CharHeadHandler";
 import { CookieHandler } from "./CookieHandler";
+import { ToolManager } from "./toolmanager";
 interface IPlayerHandlerProps {
   Player: Player;
 }
@@ -106,6 +109,48 @@ class CharacterHandler extends Roact.Component<IPlayerHandlerProps, { character?
     return (
       <>
         <CookieHandler Key={"CookieHandler"} Player={this.props.Player} character={this.state.character} />
+        <ToolManager
+          Key={"ToolManager"}
+          Player={this.props.Player}
+          character={this.state.character}
+          UsageArray={
+            new Map([
+              [
+                "DebugTool",
+                {
+                  OnInit: (_tool, ds) => {
+                    let currentStatus: string | undefined;
+                    const txt = (s: string) => {
+                      currentStatus = s;
+                      (_tool as Tools.DebugTool).DisplayPanel.SurfaceGui.TextLabel.Text = s;
+                      (_tool as Tools.DebugTool).DisplayPanel.Color = BrickColor.random().Color;
+                    };
+                    const f = () => {
+                      const dat = ClientRodux.GetPlayerAlloc(this.props.Player);
+                      if (dat === undefined) return;
+                      const n = dat.SettingsState.DebugToolStatus;
+                      if (n !== currentStatus) txt(n);
+                    };
+                    f();
+                    const sig = ClientRodux.ClientStore.changed.connect(f);
+                    ds.Connect(() => {
+                      sig.disconnect();
+                    });
+                  },
+                  OnActivation: (_tool) => {
+                    if (this.props.Player !== Players.LocalPlayer) return;
+                    ClientRodux.ClientStore.dispatch(
+                      ClientRodux.Thunks.EasyDSA({
+                        type: "ChangeMode",
+                        status: SettingsRodux.statustab[math.random(0, 2)],
+                      }),
+                    );
+                  },
+                },
+              ],
+            ])
+          }
+        />
         <CharHeadHandler Key={"CharheadHandler"} Player={this.props.Player} character={this.state.character} />
       </>
     );

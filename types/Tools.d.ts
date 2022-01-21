@@ -5,6 +5,10 @@ export namespace Tools {
       ["Handle 🡪 DisplayPanel"]: Weld;
     };
     PanelStablizer: Part;
-    DisplayPanel: Part;
+    DisplayPanel: Part & {
+      SurfaceGui: SurfaceGui & {
+        TextLabel: TextLabel;
+      };
+    };
   };
 }

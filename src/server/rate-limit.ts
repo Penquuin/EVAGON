@@ -10,6 +10,7 @@ import { CharacterRodux } from "shared/otherrodux/allocate/character-rodux";
 import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { SharedRodux } from "shared/shared-rodux";
 import { EphTypes } from "shared/ephevents/ephtypes";
+import { SettingsRodux } from "shared/otherrodux/allocate/settings-rodux";
 
 export namespace RateLimiting {
   type baseToNum<T extends string> = { [x in T]: number };
@@ -83,10 +84,15 @@ export namespace RateLimiting {
   export const AllocCache = new RLCache<AllocatedRodux.Actions.AllocatedActions>({
     DispatchChar: -1,
     Init: -1,
+    DispatchSettings: -1,
   });
   export const CharCache = new RLCache<CharacterRodux.Actions.CharacterActions>({
     Init: -1,
     SetLookUnit: 1 / 40,
+  });
+  export const SettingsCache = new RLCache<SettingsRodux.Actions.SettingsActions>({
+    Init: -1,
+    ChangeMode: 2,
   });
   export const EphCache = new BaseCache<keyof EphTypes.packs>({
     ephcookie: 1 / 20,

@@ -82,6 +82,8 @@ export namespace ServerRodux {
                 dto = RateLimiting.AllocCache.CheckRate(a.ServerFrom, a.SharedAction.action.type);
                 if (AllocatedRodux.AllocGuard("DispatchChar", a.SharedAction.action))
                   dto = RateLimiting.CharCache.CheckRate(a.ServerFrom, a.SharedAction.action.action.type);
+                if (AllocatedRodux.AllocGuard("DispatchSettings", a.SharedAction.action))
+                  dto = RateLimiting.SettingsCache.CheckRate(a.ServerFrom, a.SharedAction.action.action.type);
               } else {
                 const fn = SharedRodux.OwnershipMap[a.SharedAction.type];
                 if (fn === "none" || !CheckOwnership(s.Shared[fn], a.From)) {

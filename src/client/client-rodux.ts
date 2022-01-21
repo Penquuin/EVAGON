@@ -3,6 +3,7 @@ import Rodux, { thunkMiddleware } from "@rbxts/rodux";
 import { Players } from "@rbxts/services";
 import Signal from "@rbxts/signal";
 import { CharacterRodux } from "shared/otherrodux/allocate/character-rodux";
+import { SettingsRodux } from "shared/otherrodux/allocate/settings-rodux";
 import { AllocatedRodux } from "shared/otherrodux/allocated-rodux";
 import { events } from "shared/rbxnet/events";
 import { SharedRodux } from "shared/shared-rodux";
@@ -20,19 +21,34 @@ export namespace ClientRodux {
     export type ClientThunk = Rodux.ThunkDispatcher<ClientState, Actions.ClientActions>;
     export type ClientThunkAction = Rodux.ThunkAction<void, ClientState, {}, Actions.ClientActions>;
     //client shared
+    /**
+     * Create Dispatch Allocated Action
+     */
     export function EasyDAA(action: AllocatedRodux.Actions.AllocatedActions): SharedRodux.OnSharedActionDispatched {
       return CreateSendOSAD(CreateClientDAA(action));
     }
+    /**
+     * Create Dispatch Character Action
+     */
     export function EasyDCA(action: CharacterRodux.Actions.CharacterActions): SharedRodux.OnSharedActionDispatched {
       return EasyDAA({ type: "DispatchChar", action: action });
     }
+    /**
+     * Create Dispatch Settings Action
+     */
+    export function EasyDSA(action: SettingsRodux.Actions.SettingsActions): SharedRodux.OnSharedActionDispatched {
+      return EasyDAA({ type: "DispatchSettings", action: action });
+    }
   }
 
-  export function GetPlayerAlloc(s?: SharedRodux.SharedState): AllocatedRodux.AllocatedState | undefined {
-    return AllocatedRodux.GetAllocData(
-      SharedRodux.GenerateKey(Players.LocalPlayer),
-      s ? s : ClientStore.getState().Shared,
-    );
+  export function GetPlayerAlloc(
+    player: Player,
+    s?: SharedRodux.SharedState,
+  ): AllocatedRodux.AllocatedState | undefined {
+    return AllocatedRodux.GetAllocData(SharedRodux.GenerateKey(player), s ? s : ClientStore.getState().Shared);
+  }
+  export function GetLocalPlayerAlloc(s?: SharedRodux.SharedState): AllocatedRodux.AllocatedState | undefined {
+    return GetPlayerAlloc(Players.LocalPlayer, s);
   }
 
   export const DefaultClientState: ClientState = {
