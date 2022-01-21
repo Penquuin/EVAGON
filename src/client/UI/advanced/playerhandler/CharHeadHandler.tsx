@@ -65,7 +65,6 @@ export class CharHeadHandler extends Roact.Component<ICharHandlersProps, CHandle
                 pr.ToObjectSpace(CFrame.fromMatrix(new Vector3(), lv.Cross(uv), uv)).add(h.Neck.C0.Position),
                 0.1,
               );
-              print("T");
             };
             const rlv = hrp.CFrame.LookVector;
             const uv = hrp.CFrame.UpVector;
