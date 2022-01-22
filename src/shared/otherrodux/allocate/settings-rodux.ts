@@ -1,3 +1,4 @@
+import { Flamework } from "@flamework/core";
 import Rodux from "@rbxts/rodux";
 
 /**
@@ -6,10 +7,7 @@ import Rodux from "@rbxts/rodux";
 
 export namespace SettingsRodux {
   export const statustab: Array<SettingsState["DebugToolStatus"]> = ["Phi", "Sigmoid", "Vue"];
-  const statusguard = (x: string): x is SettingsState["DebugToolStatus"] => {
-    if (x === "Phi" || x === "Sigmoid" || x === "Vue") return true;
-    return false;
-  };
+  const statusguard = Flamework.createGuard<SettingsState["DebugToolStatus"]>();
   export interface SettingsState {
     DebugToolStatus: "Phi" | "Sigmoid" | "Vue";
   }

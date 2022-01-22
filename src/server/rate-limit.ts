@@ -92,7 +92,7 @@ export namespace RateLimiting {
   });
   export const SettingsCache = new RLCache<SettingsRodux.Actions.SettingsActions>({
     Init: -1,
-    ChangeMode: 2,
+    ChangeMode: 1 / 10,
   });
   export const EphCache = new BaseCache<keyof EphTypes.packs>({
     ephcookie: 1 / 20,
